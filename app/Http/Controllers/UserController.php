@@ -53,30 +53,29 @@ class UserController extends Controller
         $jwtAuth = new JwtAuth();
 
         $json = json_decode($request->getContent());
-        
-        if (!empty($json->email) && !empty($json->password)){
-
-            $email = (!is_null($json) && isset($json->email)) ? $json->email : null;
-            $pass = (!is_null($json) && isset($json->password)) ? $json->password : null;
-            $getToken = (!is_null($json) && isset($json->gettoken)) && $json->gettoken == true ? $json->gettoken  : null;
+        $email = (!is_null($json) && isset($json->email)) ? $json->email : null;
+        $pass = (!is_null($json) && isset($json->password)) ? $json->password : null;
+        $getToken = (!is_null($json) && isset($json->gettoken)) && $json->gettoken == true ? $json->gettoken  : null;
+        $pwd = hash('sha256', $pass);
             
-            $pwd = hash('sha256', $pass);
+        if (!empty($json->email) && !empty($json->password) && ($getToken == null || $getToken == 'false')){
             
             $signup = $jwtAuth->signup($email, $pwd);
            
-            $data = array(
-                'status' => 'success',
-                'code' => 200,
-                'token' => $signup
-            );
+        } elseif ($getToken != null) {
+            $signup = $jwtAuth->signup($email, $pwd, $getToken);
             
+               
         } else {
-            $data = array(
+            $signup = array(
                 'status' => 'error',
                 'code' => 400,
                 'message' => 'User NO creado'
             );
         }
-        return $data;
+        return $signup;
+    }
+    public function token(){
+        return csrf_token();
     }
 }

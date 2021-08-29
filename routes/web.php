@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\PlatoController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -12,6 +13,9 @@ use App\Http\Controllers\UserController;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-Route::post('register' ,[UserController::class, 'register']);
-Route::post('login' ,[UserController::class, 'login']);
+Route::prefix('api')->group(function () {
+    Route::post('register' ,[UserController::class, 'register']);
+    Route::post('login' ,[UserController::class, 'login']);
+    Route::get('token', [UserController::class, 'token']);
+    Route::get('plato', [PlatoController::class, 'index']);
+});
