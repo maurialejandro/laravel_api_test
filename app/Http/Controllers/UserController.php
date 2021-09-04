@@ -70,12 +70,14 @@ class UserController extends Controller
             $signup = array(
                 'status' => 'error',
                 'code' => 400,
-                'message' => 'User NO creado'
+                'message' => 'User NO ingresado'
             );
         }
         return $signup;
     }
     public function token(){
-        return csrf_token();
+        return response()->json([
+            'token' => csrf_token()  
+        ]);
     }
 }
