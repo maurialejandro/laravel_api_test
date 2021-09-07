@@ -35,7 +35,7 @@ class UserController extends Controller
                 $data = array(
                     'status' => 'error',
                     'code' => 400,
-                    'message' => 'User ya creado'
+                    'message' => 'User ya existe'
                 );
             }
         } else {
@@ -46,7 +46,7 @@ class UserController extends Controller
             );
         }
         
-        return $data;      
+        return response()->json($data);      
     }
 
     public function login(Request $request){
