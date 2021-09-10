@@ -60,12 +60,14 @@ class UserController extends Controller
             
         if (!empty($json->email) && !empty($json->password) && ($getToken == null || $getToken == 'false')){
             
-            $signup = $jwtAuth->signup($email, $pwd);
+            $signup = array (
+                'token' => $jwtAuth->signup($email, $pwd)
+            );    
            
         } elseif ($getToken != null) {
-            $signup = $jwtAuth->signup($email, $pwd, $getToken);
-            
-               
+            $signup = array(
+                'token' => $jwtAuth->signup($email, $pwd, $getToken) 
+            );       
         } else {
             $signup = array(
                 'status' => 'error',
