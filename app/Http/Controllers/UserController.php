@@ -57,14 +57,13 @@ class UserController extends Controller
         $pass = (!is_null($json) && isset($json->password)) ? $json->password : null;
         $getToken = (!is_null($json) && isset($json->gettoken)) && $json->gettoken == true ? $json->gettoken  : null;
         $pwd = hash('sha256', $pass);
-            
+        
         if (!empty($json->email) && !empty($json->password) && ($getToken == null || $getToken == 'false')){
-            
             $signup = array (
                 'token' => $jwtAuth->signup($email, $pwd)
             );    
-           
         } elseif ($getToken != null) {
+
             $signup = array(
                 'token' => $jwtAuth->signup($email, $pwd, $getToken) 
             );       
@@ -77,6 +76,7 @@ class UserController extends Controller
         }
         return $signup;
     }
+
     public function token(){
         return response()->json([
             'token' => csrf_token()  

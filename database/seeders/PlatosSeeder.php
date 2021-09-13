@@ -16,16 +16,10 @@ class PlatosSeeder extends Seeder
     public function run()
     {
         DB::table('platos')->insert([
+            'user_id' => 1,
             'name' => "Papas fritas",
             'price' => 1000,
         ]);
-        DB::table('platos')->insert([
-            'name' => "Cazuela",
-            'price' => 1500,
-        ]);
-        DB::table('platos')->insert([
-            'name' => "Spaghetti",
-            'price' => 2000,
-        ]);
+        
     }
 }

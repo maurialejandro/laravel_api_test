@@ -14,7 +14,9 @@ class JwtAuth{
     }
 
     public function signup($email, $password, $gettoken=null){
+
         $user = User::where(array('email' => $email, 'password' => $password))->first();
+   
         $signup = false;
         if(is_object($user)){
             $signup = true;
@@ -50,16 +52,16 @@ class JwtAuth{
 
     public function checkToken($jwt, $getIdentity = false){
         $auth = false;
-
+       
         try {
             $decoded = JWT::decode($jwt, $this->key, array('HS256'));
         } catch (\UnexpectedValueException $e) {
             $auth = false;
         } catch (\DomainException $e){
-           $auth = false; 
+            $auth = false; 
         }
 
-        if(is_object($decoded) && isset($decoded->sub)){
+        if(isset($decoded) && is_object($decoded) && isset($decoded->sub)){
             $auth = true;
         } else {
             $auth = false;

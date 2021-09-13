@@ -14,7 +14,9 @@ class CreatePlatosTable extends Migration
     public function up()
     {
         Schema::create('platos', function (Blueprint $table) {
-            $table->id();
+            $table->Increments('id');
+            $table->Integer('user_id');
+            $table->foreign('user_id')->references('id')->on('users');
             $table->string('name');
             $table->integer('price');
             $table->timestamps();
