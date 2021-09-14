@@ -42,11 +42,7 @@ class JwtAuth{
             }
         } else {
             // Error
-            return response()->json([
-                'status' => 'Error',
-                'code' => 400,
-                'message' => 'Login ha fallado!'
-            ]);
+            return $signup;
         }
     }
 
