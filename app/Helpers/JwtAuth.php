@@ -69,6 +69,28 @@ class JwtAuth{
 
         return $auth;
     }
+
+    public function info($token){
+        if($token){
+            try{
+                $decoded = JWT::decode($token, $this->key, array('HS256'));
+                return $decoded;
+            }catch(\DomainException $e){
+                $error = response()->json([
+                    'error' => $e
+                ]);
+            }
+        }else{
+            $error = response()->json([
+                'status' => 'error',
+                'code' => 400,
+                'message' => 'NO TOKEN'
+            ]);
+        }
+
+        return $error;
+
+    }
 }
 
 ?>

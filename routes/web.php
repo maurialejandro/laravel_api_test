@@ -19,5 +19,5 @@ Route::prefix('api')->group(function () {
     Route::get('token', [UserController::class, 'token']);
     Route::get('plato', [PlatoController::class, 'index']);
     Route::post('/store/platos', [PlatoController::class, 'store']);
-
+    Route::post('info-user', [UserController::class, 'info']);
 });

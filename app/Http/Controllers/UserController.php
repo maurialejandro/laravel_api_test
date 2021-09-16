@@ -82,4 +82,14 @@ class UserController extends Controller
             'token' => csrf_token()  
         ]);
     }
+    
+    public function info(Request $request){
+        $JwtAuth = new JwtAuth();
+        $json = json_decode($request->getContent());
+        if($json->token){
+            $infoUser = $JwtAuth->info($json->token);
+            return $infoUser;
+        }
+       
+    }
 }
