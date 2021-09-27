@@ -86,10 +86,53 @@ class UserController extends Controller
     public function info(Request $request){
         $JwtAuth = new JwtAuth();
         $json = json_decode($request->getContent());
+        // al obtener informacion de usuario validar token tiempo de login y authorization app
         if($json->token){
             $infoUser = $JwtAuth->info($json->token);
             return $infoUser;
         }
        
+    }
+
+    // crear funcion para subir avatar 
+
+    public function storeAvatar(Request $request){
+        $JwtAuth = new JwtAuth();
+        
+        if(isset($request->token)){
+            $user = $JwtAuth->checkToken($request->token, true);
+            if($user){
+                // guardar imagen 
+                $isset_user = User::where('email' , '=', $user->email)->first();
+                $path = $request->img->store('avatar'.'/'.$user->sub);
+                $isset_user->avatar = $path;
+                if($isset_user->save()){
+                    return response()->json([
+                        "status" => "success",
+                        "code" => 200,
+                        "message" => "Imagen almacenada correctamente"
+                    ]);
+                }else{
+                    return response()->json([
+                        "status" => "success",
+                        "code" => 400,
+                        "message" => "imagen no almacenada"
+                    ]);
+                }
+
+            }else{
+                return response()->json(array(
+                    "status" => "error",
+                    "code" => 400,
+                    "message" => "NO AUTHORIZATION"
+                ));
+            }
+        }else{
+            return response()->json([
+                "status" => "error",
+                "code" => 400,
+                "message" => "NO TOKEN"
+            ]);
+        }   
     }
 }

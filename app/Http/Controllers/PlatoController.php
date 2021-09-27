@@ -29,6 +29,7 @@ class PlatoController extends Controller
     }
 
     public function store(Request $request){
+        // Mejorar forma de retornar valores, crear variable y llenarla segun corresponda luego hacer solo un return o los menos posibles
         $hash = $request->header('Authorization', null);
         $JwtAuth = new JwtAuth();
         
