@@ -73,8 +73,10 @@ class JwtAuth{
     public function info($token){
         if($token){
             try{
-                $decoded = JWT::decode($token, $this->key, array('HS256'));
-                return $decoded;
+                if($this->checkToken($token)){
+                    $decoded = JWT::decode($token, $this->key, array('HS256'));
+                    return $decoded;
+                }
             }catch(\DomainException $e){
                 $error = response()->json([
                     'error' => $e

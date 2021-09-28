@@ -99,7 +99,7 @@ class UserController extends Controller
     public function storeAvatar(Request $request){
         $JwtAuth = new JwtAuth();
         
-        if(isset($request->token)){
+        if(isset($request->token) && isset($request->img)){
             $user = $JwtAuth->checkToken($request->token, true);
             if($user){
                 // guardar imagen 
@@ -107,32 +107,33 @@ class UserController extends Controller
                 $path = $request->img->store('avatar'.'/'.$user->sub);
                 $isset_user->avatar = $path;
                 if($isset_user->save()){
-                    return response()->json([
+                    $data = array(
                         "status" => "success",
                         "code" => 200,
                         "message" => "Imagen almacenada correctamente"
-                    ]);
+                    );
                 }else{
-                    return response()->json([
+                    $data = array(
                         "status" => "success",
                         "code" => 400,
-                        "message" => "imagen no almacenada"
-                    ]);
+                        "message" => "Imagen no almacenada"
+                    );
                 }
 
             }else{
-                return response()->json(array(
+                $data = array(
                     "status" => "error",
                     "code" => 400,
                     "message" => "NO AUTHORIZATION"
-                ));
+                );
             }
         }else{
-            return response()->json([
+            $data = array(
                 "status" => "error",
                 "code" => 400,
-                "message" => "NO TOKEN"
-            ]);
-        }   
+                "message" => "NO AUTHORIZATION, NO IMG"
+            );
+        } 
+        return $data;  
     }
 }
