@@ -98,13 +98,14 @@ class UserController extends Controller
 
     public function storeAvatar(Request $request){
         $JwtAuth = new JwtAuth();
-        
+      
         if(isset($request->token) && isset($request->img)){
             $user = $JwtAuth->checkToken($request->token, true);
+            
             if($user){
                 // guardar imagen 
                 $isset_user = User::where('email' , '=', $user->email)->first();
-                $path = $request->img->store('avatar'.'/'.$user->sub);
+                $path = $request->file('img')->store('avatar'.'/'.$user->sub);
                 $isset_user->avatar = $path;
                 if($isset_user->save()){
                     $data = array(
