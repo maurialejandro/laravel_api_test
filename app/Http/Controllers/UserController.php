@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Helpers\JwtAuth;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -91,21 +92,34 @@ class UserController extends Controller
             $infoUser = $JwtAuth->info($json->token);
             return $infoUser;
         }
-       
     }
 
     // crear funcion para subir avatar 
 
     public function storeAvatar(Request $request){
         $JwtAuth = new JwtAuth();
-      
-        if(isset($request->token) && isset($request->img)){
+
+        if(isset($request->token) && isset($request->image)){
             $user = $JwtAuth->checkToken($request->token, true);
-            
             if($user){
                 // guardar imagen 
                 $isset_user = User::where('email' , '=', $user->email)->first();
-                $path = $request->file('img')->store('avatar'.'/'.$user->sub);
+                try {
+                    //code...
+                    if($isset_user->avatar){
+                        Storage::delete($isset_user->avatar);
+                        $path = $request->file('image')->store('avatar'.'/'.$user->sub);
+                    }else{
+                        $path = $request->file('image')->store('avatar'.'/'.$user->sub);
+                    }
+                
+                } catch (\Throwable $th) {
+                    //throw $th;
+                    return response([
+                        'error' => $th
+                    ]);
+                }
+                
                 $isset_user->avatar = $path;
                 if($isset_user->save()){
                     $data = array(
