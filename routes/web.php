@@ -21,4 +21,5 @@ Route::prefix('api')->group(function () {
     Route::post('/store/platos', [PlatoController::class, 'store']);
     Route::post('info-user', [UserController::class, 'info']);
     Route::post('store-avatar', [UserController::class, 'storeAvatar']);
+    Route::post('get-avatar', [UserController::class, 'getAvatar']);
 });

@@ -151,4 +151,42 @@ class UserController extends Controller
         } 
         return $data;  
     }
+
+    public function getAvatar(Request $request){
+        $JwtAuth = new JwtAuth();
+       
+        if(isset($request->token)){
+            
+            $user = $JwtAuth->checkToken($request->token, true);
+            
+            if($user){
+                //devolver imagen avatar
+                $isset_user = User::where('email', '=', $user->email)->first();
+                try {
+                    $file = Storage::disk('avatar')->get('2/8IaAarSgVolBykPdECdjIj12XA3XSL0JhG3SWpdF.jpg');
+                    if($file){
+                        $data = array(
+                            "status" => "success",
+                            "code" => 200,
+                            "message" => "Aqui va la imagen wey",
+                            "image" => $file
+                        );
+                    }else{
+                        $data = array(
+                            "status" => "error",
+                            "code" => 400,
+                            "message" => "Imagen no encontrada"
+                        );
+                    }
+                } catch (\Throwable $th) {
+                    $data = array(
+                        "status" => "error catch",
+                        "message" => $th
+                    );
+                }
+                return $data;
+            }
+        }
+    }
+
 }
