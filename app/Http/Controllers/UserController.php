@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Helpers\JwtAuth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -89,13 +90,13 @@ class UserController extends Controller
         $json = json_decode($request->getContent());
         // al obtener informacion de usuario validar token tiempo de login y authorization app
         if($json->token){
-            $infoUser = $JwtAuth->info($json->token);
-            return $infoUser;
+            $user = $JwtAuth->info($json->token);
+            $isset_user = User::where('email', '=', $user->email)->first();
+            return $isset_user;
         }
     }
 
     // crear funcion para subir avatar 
-
     public function storeAvatar(Request $request){
         $JwtAuth = new JwtAuth();
 
@@ -107,7 +108,7 @@ class UserController extends Controller
                 try {
                     //code...
                     if($isset_user->avatar){
-                        Storage::delete($isset_user->avatar);
+                        Storage::delete('avatar/'.$isset_user->avatar);
                         $path = $request->file('image')->store('avatar'.'/'.$user->sub);
                     }else{
                         $path = $request->file('image')->store('avatar'.'/'.$user->sub);
@@ -119,13 +120,14 @@ class UserController extends Controller
                         'error' => $th
                     ]);
                 }
-                
-                $isset_user->avatar = $path;
+                $new_path = str_replace("avatar/", "", $path);
+                $isset_user->avatar = $new_path;
                 if($isset_user->save()){
                     $data = array(
                         "status" => "success",
                         "code" => 200,
-                        "message" => "Imagen almacenada correctamente"
+                        "message" => "Imagen almacenada correctamente",
+                        "avatar" => $new_path
                     );
                 }else{
                     $data = array(
@@ -152,41 +154,127 @@ class UserController extends Controller
         return $data;  
     }
 
-    public function getAvatar(Request $request){
+    public function getAvatar($id, $img){
+        $file = Storage::disk('avatar')->get($id.'/'.$img);
+        return response($file, 200);
+    }
+
+    public function updateProfileName(Request $request){
         $JwtAuth = new JwtAuth();
-       
-        if(isset($request->token)){
-            
+        $user = $JwtAuth->checkToken($request->token, true);
+        
+        if(isset($request->token) && isset($request->name) && isset($user)){
+            $isset_user = User::where('email', '=', $user->email)->first();
+            $isset_user->name = $request->name;
+
+            if($isset_user->save()){
+                $data = array(
+                    'status' => 'success',
+                    'code' => 200,
+                    'message' => 'Nombre actualizado satisfactoriamente'
+                );
+            }else{
+                $data = array(
+                    'status' => 'error',
+                    'code' => 400,
+                    'message' => 'Error al actualizar nombre'
+                );
+            }
+        }else{
+            $data = array(
+                'status' => 'error',
+                'code' => 400,
+                'message' => 'Error al obtener token y nombre'
+            );
+        }
+        
+        return response($data);
+    }
+
+    public function updateProfileEmail(Request $request){
+        $JwtAuth = new JwtAuth();
+
+        if(isset($request->token) && isset($request->email)){
             $user = $JwtAuth->checkToken($request->token, true);
-            
-            if($user){
-                //devolver imagen avatar
-                $isset_user = User::where('email', '=', $user->email)->first();
-                try {
-                    $file = Storage::disk('avatar')->get('2/8IaAarSgVolBykPdECdjIj12XA3XSL0JhG3SWpdF.jpg');
-                    if($file){
+            $isset_user = User::where('email', '=', $user->email)->first();
+            if($isset_user){
+                $isset_user->email = $request->email;
+                if($isset_user->save()){
+                    $data = array(
+                        'status' => 'success',
+                        'code' => 200,
+                        'message' => 'Email actualizado satisfactoriamente'
+                    );
+                }else{
+                    $data = array(
+                        'status' => 'error',
+                        'code' => 401,
+                        'message' => 'Error al actualizar email'
+                    );
+                }
+            }else{
+                $data = array(
+                    'status' => 'error',
+                    'code' => 403,
+                    'message' => 'Error al obtene usuario'
+                );
+            }
+        }else{
+            $data = array(
+                'status' => 'error',
+                'code' => 402,
+                'message' => 'Error al obtener token'
+            );
+        }
+
+        return response($data);
+    }
+
+    public function updateProfilePass(Request $request){
+        $JwtAuth = new JwtAuth();
+        if(isset($request->token) && isset($request->pass)){
+            $user = $JwtAuth->checkToken($request->token, true);
+            $isset_user = User::where('email', '=', $user->email)->first();
+            if($isset_user){
+                $passwordDb = hash('sha256', $request->passOld);
+                if($user->pass = $passwordDb){
+                    $pwd = hash('sha256', $request->pass);
+                    $isset_user->password = $pwd;
+                    if($isset_user->save()){
                         $data = array(
-                            "status" => "success",
-                            "code" => 200,
-                            "message" => "Aqui va la imagen wey",
-                            "image" => $file
+                            'status' => 'success',
+                            'code' => 200,
+                            'message' => 'Contraseña actualizada satisfactoriamente'
                         );
                     }else{
                         $data = array(
-                            "status" => "error",
-                            "code" => 400,
-                            "message" => "Imagen no encontrada"
+                            'status' => 'error',
+                            'code' => 405,
+                            'message' => 'La contraseña no se almaceno'
                         );
                     }
-                } catch (\Throwable $th) {
+                }else{
                     $data = array(
-                        "status" => "error catch",
-                        "message" => $th
+                        'status' => 'error',
+                        'code' => 400,
+                        'message' => 'Ingresar contraeña correcta'
                     );
                 }
-                return $data;
+            }else{
+                $data = array(
+                    'status' => 'error',
+                    'code' => 403,
+                    'message' => 'Error al obtener usuario'
+                );
             }
+        }else{
+            $data = array(
+                'status' => 'error',
+                'code' => 402,
+                'message' => 'Error al obtener token'
+            );
         }
-    }
 
+        return response($data);
+    }
 }
