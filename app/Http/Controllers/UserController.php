@@ -197,19 +197,38 @@ class UserController extends Controller
         if(isset($request->token) && isset($request->email)){
             $user = $JwtAuth->checkToken($request->token, true);
             $isset_user = User::where('email', '=', $user->email)->first();
-            if($isset_user){
-                $isset_user->email = $request->email;
-                if($isset_user->save()){
-                    $data = array(
-                        'status' => 'success',
-                        'code' => 200,
-                        'message' => 'Email actualizado satisfactoriamente'
-                    );
+            $repeat_email = User::where('email', '=', $request->email)->first();
+            $password = hash('sha256', $request->pass);
+    
+            if(($isset_user) && ($password == $isset_user->password) ){
+                if(!$repeat_email){
+                    $isset_user->email = $request->email;
+                    if($isset_user->save()){
+                        $signup = array (
+                            'token' => $JwtAuth->signup($isset_user->email, $password)
+                        );
+                        if($signup){
+                            $data = $signup;
+                        }else{
+                            $data = array(
+                                'status' => 'error',
+                                'code' => 400,
+                                'message' => 'Error de credenciales'
+                            );
+                        }
+
+                    }else{
+                        $data = array(
+                            'status' => 'error',
+                            'code' => 401,
+                            'message' => 'Error al actualizar email'
+                        );
+                    }
                 }else{
                     $data = array(
                         'status' => 'error',
-                        'code' => 401,
-                        'message' => 'Error al actualizar email'
+                        'code' => 406,
+                        'message' => 'Error email ya registrado'
                     );
                 }
             }else{
@@ -237,7 +256,8 @@ class UserController extends Controller
             $isset_user = User::where('email', '=', $user->email)->first();
             if($isset_user){
                 $passwordDb = hash('sha256', $request->passOld);
-                if($user->pass = $passwordDb){
+                
+                if($user->password == $passwordDb){
                     $pwd = hash('sha256', $request->pass);
                     $isset_user->password = $pwd;
                     if($isset_user->save()){
@@ -257,7 +277,7 @@ class UserController extends Controller
                     $data = array(
                         'status' => 'error',
                         'code' => 400,
-                        'message' => 'Ingresar contraeña correcta'
+                        'message' => 'Ingresar contraseña correcta'
                     );
                 }
             }else{

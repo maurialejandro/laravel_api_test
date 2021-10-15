@@ -16,7 +16,7 @@ class JwtAuth{
     public function signup($email, $password, $gettoken=null){
 
         $user = User::where(array('email' => $email, 'password' => $password))->first();
-   
+        
         $signup = false;
         if(is_object($user)){
             $signup = true;
