@@ -96,7 +96,6 @@ class UserController extends Controller
         }
     }
 
-    // crear funcion para subir avatar 
     public function storeAvatar(Request $request){
         $JwtAuth = new JwtAuth();
 
@@ -114,7 +113,7 @@ class UserController extends Controller
                         $path = $request->file('image')->store('avatar'.'/'.$user->sub);
                     }
                 
-                } catch (\Throwable $th) {
+                }catch (\Throwable $th){
                     //throw $th;
                     return response([
                         'error' => $th

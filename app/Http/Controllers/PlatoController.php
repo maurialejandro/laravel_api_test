@@ -29,55 +29,64 @@ class PlatoController extends Controller
     }
 
     public function store(Request $request){
-        // Mejorar forma de retornar valores, crear variable y llenarla segun corresponda luego hacer solo un return o los menos posibles
-        $hash = $request->header('Authorization', null);
         $JwtAuth = new JwtAuth();
         
-        if(isset($hash) && !empty($hash)){
-            $checkToken = $JwtAuth->checkToken($hash);
-            
-            if($checkToken){
-                $json = json_decode($request->getContent());
-                $user = $JwtAuth->checkToken($hash, true);
-               
-                if(isset($json->name) && isset($json->price)){
-                    $plato = new Plato();
-                    $plato->user_id = $json->user_id;
-                    $plato->name = $json->name;
-                    $plato->price = $json->price;
-                    if($plato->save()){
-                        return response()->json(array(
-                            'status' => 'success',
-                            'code' => 200,
-                            'message' => 'Plato guardado satisfactoriamente'
-                        ));
+        if(isset($request->name) && isset($request->price) && isset($request->description)){
+            if(isset($request->token)){
+                $checkToken = $JwtAuth->checkToken($request->token);
+                if($checkToken){
+                    $json = json_decode($request->getContent());
+                    $user = $JwtAuth->checkToken($hash, true);
+                   
+                    if(isset($json->name) && isset($json->price)){
+                        $plato = new Plato();
+                        $plato->user_id = $json->user_id;
+                        $plato->name = $json->name;
+                        $plato->price = $json->price;
+                        if($plato->save()){
+                            $data = array(
+                                'status' => 'success',
+                                'code' => 200,
+                                'message' => 'Plato guardado satisfactoriamente'
+                            );
+                        }else{
+                            $data = array(
+                                'status' => 'error',
+                                'code' => 400,
+                                'message' => 'Ocurrio error al intentar guardar plato'
+                            );
+                        }
+    
                     }else{
-                        return response()->json(array(
+                        $data = array(
                             'status' => 'error',
                             'code' => 400,
-                            'message' => 'Ocurrio error al intentar guardar'
-                        ));
+                            'message' => 'Falto ingresar campo'
+                        );
                     }
-
-                }else{
-                    return response()->json(array(
+                } else{
+                    $data = array(
                         'status' => 'error',
-                        'code' => 400,
-                        'message' => 'Falto ingresar campo requerido'
-                    ));
+                        'code' => 405,
+                        'message' => 'Token invalido'
+                    );
                 }
-            } else{
-                return response()->json(array(
+
+            }else{
+                $data = array(
                     'status' => 'error',
-                    'message' => 'Token Invalido'
-                ));
+                    'code' => 401,
+                    'message' => 'No token'
+                );
             }
         }else{
-            return response()->json(array(
+            $data = array(
                 'status' => 'error',
-                'message' => 'No token'
-            ));
+                'code' => 400,
+                'message' => 'No data'
+            );
         }
-        
+
+        return response()->json($data);        
     }
 }

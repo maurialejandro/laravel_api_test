@@ -19,6 +19,7 @@ class CreatePlatosTable extends Migration
             $table->foreign('user_id')->references('id')->on('users');
             $table->string('name');
             $table->integer('price');
+            $table->string('img');
             $table->timestamps();
         });
     }

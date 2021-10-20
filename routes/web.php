@@ -14,16 +14,19 @@ use App\Http\Controllers\PlatoController;
 |
 */
 Route::prefix('api')->group(function () {
+    // Routes profile
     Route::post('register' ,[UserController::class, 'register']);
     Route::post('login' ,[UserController::class, 'login']);
     Route::get('token', [UserController::class, 'token']);
-    Route::get('plato', [PlatoController::class, 'index']);
-    Route::post('/store/platos', [PlatoController::class, 'store']);
     Route::post('info-user', [UserController::class, 'info']);
     Route::post('store-avatar', [UserController::class, 'storeAvatar']);
     Route::get('get-avatar/{id}/{img}', [UserController::class, 'getAvatar']);
     Route::post('update-profile-name', [UserController::class, 'updateProfileName']);
     Route::post('update-profile-email', [UserController::class, 'updateProfileEmail']);
     Route::post('update-profile-pass', [UserController::class, 'updateProfilePass']);
+    
+    // Routes platos
+    Route::get('plato', [PlatoController::class, 'index']);
+    Route::post('store-platos', [PlatoController::class, 'store']);
     
 });
