@@ -24,6 +24,7 @@ Route::prefix('api')->group(function () {
     Route::post('update-profile-name', [UserController::class, 'updateProfileName']);
     Route::post('update-profile-email', [UserController::class, 'updateProfileEmail']);
     Route::post('update-profile-pass', [UserController::class, 'updateProfilePass']);
+    Route::post('store-file-plato', [PlatoController::class, 'storeFilePlato']);
     
     // Routes platos
     Route::get('plato', [PlatoController::class, 'index']);

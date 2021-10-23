@@ -28,40 +28,79 @@ class PlatoController extends Controller
         
     }
 
+    public function storeFilePlato(Request $request){
+        $JwtAuth = new JwtAuth();
+
+        if(isset($request->token)){
+            $user = $JwtAuth->checkToken($request->token, true);
+            if($user){
+                if(isset($request->image)){
+                    $path = $request->file('image')->store('plato'.'/'.$user->sub);
+                    $new_path = str_replace("plato/", "", $path);
+                    $data = array(
+                        'status' => 'success',
+                        'code' => 200,
+                        'path' => $new_path
+                    );
+                }else{
+                    $data = array(
+                        'status' => 'error',
+                        'code' => 402,
+                        'message' => 'No Image'
+                    );
+                }
+
+            }else{
+                $data = array(
+                    'status' => 'error',
+                    'code' => 401,
+                    'message' => 'Token invalido'
+                );
+            }
+
+        }else{
+            $data = array(
+                'status' => 'error',
+                'code' => 400,
+                'message' => 'NO TOKEN'
+            );
+        }
+
+        return response($data);
+    }
     public function store(Request $request){
         $JwtAuth = new JwtAuth();
-        
-        if(isset($request->name) && isset($request->price) && isset($request->description)){
+        if(isset($request->name) && isset($request->price) && isset($request->description) && isset($request->path) ){
+            
             if(isset($request->token)){
-                $checkToken = $JwtAuth->checkToken($request->token);
-                if($checkToken){
-                    $json = json_decode($request->getContent());
-                    $user = $JwtAuth->checkToken($hash, true);
-                   
-                    if(isset($json->name) && isset($json->price)){
-                        $plato = new Plato();
-                        $plato->user_id = $json->user_id;
-                        $plato->name = $json->name;
-                        $plato->price = $json->price;
-                        if($plato->save()){
-                            $data = array(
-                                'status' => 'success',
-                                'code' => 200,
-                                'message' => 'Plato guardado satisfactoriamente'
-                            );
-                        }else{
-                            $data = array(
-                                'status' => 'error',
-                                'code' => 400,
-                                'message' => 'Ocurrio error al intentar guardar plato'
-                            );
-                        }
-    
+                $user = $JwtAuth->checkToken($request->token, true);
+                if($user){
+                    $new_path = json_decode($request->path);
+                    $plato = new Plato();
+                    $plato->user_id = $user->sub;
+                    $plato->name = $request->name;
+                    $plato->price = $request->price;
+                    $plato->description = $request->description;
+                    $plato->latitude = $request->latitude;
+                    $plato->longitude = $request->longitude;
+                    $stringPath = implode(",", $new_path);
+                    $plato->img = $stringPath;
+                    try {
+                        $plato->save();
+                    } catch (\Throwable $th) {
+                        return response([$th]);
+                    }
+                    if($plato->save()){
+                        $data = array(
+                            'status' => 'success',
+                            'code' => 200,
+                            'message' => 'Plato almacenado Satisfactoriamente'
+                        );
                     }else{
                         $data = array(
                             'status' => 'error',
-                            'code' => 400,
-                            'message' => 'Falto ingresar campo'
+                            'code' => 405,
+                            'message' => 'Plato NO guardado'
                         );
                     }
                 } else{

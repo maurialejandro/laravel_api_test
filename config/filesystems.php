@@ -56,6 +56,21 @@ return [
                 ],
             ],
         ],
+        'plato' => [
+            'driver' => 'local',
+            'root' => storage_path('app/plato'),
+            'visibility' => 'public',
+            'permissions' => [
+                'file' => [
+                    'public' => 0664,
+                    'private' => 0600,
+                ],
+                'dir' => [
+                    'public' => 0775,
+                    'private' => 0700,
+                ],
+            ],
+        ],
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
