@@ -68,37 +68,12 @@ class PlatoController extends Controller
 
         return response($data);
     }
-    public function getFile($id, $img){
-	return response($request);
-    }
-
-    public function getPlato(Request $request){
-    $JwtAuth = new JwtAuth();
-	    if(isset($request->token)){
-	        $user = $JwtAuth->checkToken($request->token, true);
-	        if($user){
-	        	$data = Plato::where('user_id', '=', $user->sub)->get();
- 	        }else{
-	        	$data = array(
-	                'status' => 'error',
-	                'code' => 402,
-	                'message' => 'Token Invalido'	     
-	            );
-	    }
-	}else{
-	    $data = array(
-            	'status' => 'error',
-		'code' => 401,
-		'message' => 'NO TOKEN'	
-            );	
-	}
-	return response()->json($data);
-	
+    public function getFile(Request $request){	
     }
     public function store(Request $request){
         $JwtAuth = new JwtAuth();
         if(isset($request->name) && isset($request->price) && isset($request->description) && isset($request->path) ){
-            
+
             if(isset($request->token)){
                 $user = $JwtAuth->checkToken($request->token, true);
                 if($user){

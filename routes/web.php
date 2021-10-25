@@ -24,10 +24,11 @@ Route::prefix('api')->group(function () {
     Route::post('update-profile-name', [UserController::class, 'updateProfileName']);
     Route::post('update-profile-email', [UserController::class, 'updateProfileEmail']);
     Route::post('update-profile-pass', [UserController::class, 'updateProfilePass']);
-    Route::post('store-file-plato', [PlatoController::class, 'storeFilePlato']);
     
     // Routes platos
+    Route::post('store-file-plato', [PlatoController::class, 'storeFilePlato']);
     Route::get('plato', [PlatoController::class, 'index']);
     Route::post('store-platos', [PlatoController::class, 'store']);
-    
+    Route::post('get-file/{id}/{img}', [PlatoController::class, 'getFile']);
+    Route::post('get-plato', [PlatoController::class, 'getPlato']); 
 });
