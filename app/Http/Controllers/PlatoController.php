@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Helpers\JwtAuth;
 use App\Models\Plato;
+use Illuminate\Support\Facades\Storage;
 
 class PlatoController extends Controller
 {
@@ -25,7 +26,6 @@ class PlatoController extends Controller
                 'message' => 'No token'
             ));
         }
-        
     }
 
     public function storeFilePlato(Request $request){
@@ -69,31 +69,35 @@ class PlatoController extends Controller
         return response($data);
     }
     public function getFile($id, $img){
-	return response($request);
+	    $file = Storage::disk('plato')->get($id.'/'.$img);
+	    return response($file, 200);
     }
 
     public function getPlato(Request $request){
     $JwtAuth = new JwtAuth();
-	    if(isset($request->token)){
-	        $user = $JwtAuth->checkToken($request->token, true);
-	        if($user){
-	        	$data = Plato::where('user_id', '=', $user->sub)->get();
- 	        }else{
-	        	$data = array(
-	                'status' => 'error',
-	                'code' => 402,
-	                'message' => 'Token Invalido'	     
-	            );
+	if(isset($request->token)){
+	    $user = $JwtAuth->checkToken($request->token, true);
+	    if($user){
+		    if(!isset($request->skip) && !isset($request->size)){
+		    	$data = Plato::where('user_id', '=', $user->sub)->get();
+		    }else{
+			$data = Plato::where('user_id', '=', $user->sub)->orderBy('created_at', 'desc')->skip(0)->limit($request->size)->get();
+		    }
+ 	    }else{
+	        $data = array(
+	            'status' => 'error',
+	            'code' => 402,
+	            'message' => 'Token Invalido'
+	        );
 	    }
 	}else{
 	    $data = array(
-            	'status' => 'error',
-		'code' => 401,
-		'message' => 'NO TOKEN'	
-            );	
+            'status' => 'error',
+		    'code' => 401,
+		    'message' => 'NO TOKEN'	
+        );
 	}
-	return response()->json($data);
-	
+	    return response()->json($data);
     }
     public function store(Request $request){
         $JwtAuth = new JwtAuth();

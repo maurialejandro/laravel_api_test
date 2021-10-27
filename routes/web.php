@@ -29,6 +29,6 @@ Route::prefix('api')->group(function () {
     Route::post('store-file-plato', [PlatoController::class, 'storeFilePlato']);
     Route::get('plato', [PlatoController::class, 'index']);
     Route::post('store-platos', [PlatoController::class, 'store']);
-    Route::post('get-file/{id}/{img}', [PlatoController::class, 'getFile']);
+    Route::get('get-file/{id}/{img}', [PlatoController::class, 'getFile']);
     Route::post('get-plato', [PlatoController::class, 'getPlato']); 
 });
