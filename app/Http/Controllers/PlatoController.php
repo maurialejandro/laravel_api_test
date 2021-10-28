@@ -78,11 +78,18 @@ class PlatoController extends Controller
 	if(isset($request->token)){
 	    $user = $JwtAuth->checkToken($request->token, true);
 	    if($user){
-		    if(!isset($request->skip) && !isset($request->size)){
-		    	$data = Plato::where('user_id', '=', $user->sub)->get();
-		    }else{
-			$data = Plato::where('user_id', '=', $user->sub)->orderBy('created_at', 'desc')->skip(0)->limit($request->size)->get();
-		    }
+		    $totalPlatos = Plato::where('user_id', '=', $user->sub)->get();
+		    $total = count($totalPlatos);
+		    $platos = Plato::where('user_id', '=', $user->sub)->orderBy('created_at', 'desc')->offset($request->skip)->limit($request->limit)->get();
+		    $data = array(
+		    	'status' => 'success',
+			'code' => 200,
+			'message' => 'Obtencion de datos correctamente',
+			'totalPlatos' => $total,
+			'platos' => $platos,
+			'skip' => $request->skip,
+			'limit' => $request->limit
+		    );
  	    }else{
 	        $data = array(
 	            'status' => 'error',
@@ -92,17 +99,16 @@ class PlatoController extends Controller
 	    }
 	}else{
 	    $data = array(
-            'status' => 'error',
-		    'code' => 401,
-		    'message' => 'NO TOKEN'	
-        );
+            	'status' => 'error',
+	    	'code' => 401,
+		'message' => 'NO TOKEN'
+            );
 	}
-	    return response()->json($data);
+	return response()->json($data);
     }
     public function store(Request $request){
         $JwtAuth = new JwtAuth();
         if(isset($request->name) && isset($request->price) && isset($request->description) && isset($request->path) ){
-            
             if(isset($request->token)){
                 $user = $JwtAuth->checkToken($request->token, true);
                 if($user){
