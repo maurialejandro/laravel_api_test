@@ -120,6 +120,8 @@ class PlatoController extends Controller
                     $plato->description = $request->description;
                     $plato->latitude = $request->latitude;
                     $plato->longitude = $request->longitude;
+                    $plato->latitudeDelta = $request->latitudeDelta;
+                    $plato->longitudeDelta = $request->longitudeDelta;
                     $stringPath = implode(",", $new_path);
                     $plato->img = $stringPath;
                     try {
