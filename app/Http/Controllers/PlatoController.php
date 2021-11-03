@@ -78,17 +78,24 @@ class PlatoController extends Controller
 	if(isset($request->token)){
 	    $user = $JwtAuth->checkToken($request->token, true);
 	    if($user){
+            $limit = $request->limit;
+            $skip = $request->skip;
 		    $totalPlatos = Plato::where('user_id', '=', $user->sub)->get();
 		    $total = count($totalPlatos);
-		    $platos = Plato::where('user_id', '=', $user->sub)->orderBy('created_at', 'desc')->offset($request->skip)->limit($request->limit)->get();
+            if($total > 10){
+                $limit = 10;
+            }else{
+                $limit = $total;
+            }
+		    $platos = Plato::where('user_id', '=', $user->sub)->orderBy('created_at', 'desc')->offset($skip)->limit($limit)->get();
 		    $data = array(
-		    	'status' => 'success',
-			'code' => 200,
-			'message' => 'Obtencion de datos correctamente',
-			'totalPlatos' => $total,
-			'platos' => $platos,
-			'skip' => $request->skip,
-			'limit' => $request->limit
+		        'status' => 'success',
+			    'code' => 200,
+			    'message' => 'Obtencion de datos correctamente',
+			    'totalPlatos' => $total,
+			    'platos' => $platos,
+			    'skip' => $skip,
+			    'limit' => $limit
 		    );
  	    }else{
 	        $data = array(
