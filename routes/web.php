@@ -24,6 +24,7 @@ Route::prefix('api')->group(function () {
     Route::post('update-profile-name', [UserController::class, 'updateProfileName']);
     Route::post('update-profile-email', [UserController::class, 'updateProfileEmail']);
     Route::post('update-profile-pass', [UserController::class, 'updateProfilePass']);
+    Route::post('check-user', [UserController::class, 'checkUser']);
     
     // Routes platos
     Route::post('store-file-plato', [PlatoController::class, 'storeFilePlato']);
@@ -32,4 +33,5 @@ Route::prefix('api')->group(function () {
     Route::get('get-file/{id}/{img}', [PlatoController::class, 'getFile']);
     Route::post('get-plato', [PlatoController::class, 'getPlato']); 
     Route::post('get-total-platos', [PlatoController::class, 'getTotalPlatos']);
+    Route::post('store-puntuation', [PlatoController::class, 'storePuntuation']);
 });

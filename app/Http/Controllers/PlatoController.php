@@ -174,4 +174,42 @@ class PlatoController extends Controller
 
         return response()->json($data);        
     }
+
+    public function storePuntuation(Request $request){
+        $jwtAuth = new JwtAuth();
+        if(isset($request->token)){
+            $user = $jwtAuth->checkToken($request->token, true);
+            if($user){
+                $plato = Plato::where('id', '=', $request->id)->first();
+                $plato->rating = $request->rating;
+                $plato->review = $request->review;
+                if($plato->save()){
+                    $data = array(
+                        'status' => 'success',
+                        'code' => 200,
+                        'message' => 'Puntuacion almacenada satisfactoriamente'
+                    );
+                }else{
+                    $data = array(
+                        'status' => 'error',
+                        'code' => 405,
+                        'message' => 'NO se almaceno la puntuacion'
+                    );
+                }
+            }else{
+                $data = array(
+                    'status' => 'error',
+                    'code' => 401,
+                    'message' => 'Token invalido'
+                );
+            }
+        }else{
+            $data = array(
+                'status' => 'error',
+                'code' => 400,
+                'message' => 'NO TOKEN'
+            );
+        }
+        return response()->json($data);
+    } 
 }

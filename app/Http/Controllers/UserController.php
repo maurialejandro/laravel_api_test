@@ -11,6 +11,33 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+    public function checkUser(Request $request){
+        $jwtAuth = new JwtAuth();
+        if(isset($request->token)){
+            $user = $jwtAuth->checktoken($request->token, true);
+            if(isset($user)){
+                $data = array(
+                    'status' => 'success',
+                    'code' => 200,
+                    'message' => 'Obtencion de usuario satisfactoria',
+                    'user' => $user
+                );
+            }else{
+                $data = array(
+                    'status' => 'error',
+                    'code' => 402,
+                    'message' => 'error de token'
+                );
+            }
+        }else{
+            $data = array(
+                'status' => 'error',
+                'code' => 401,
+                'message' => 'NO TOKEN'
+            );
+        }
+        return response()->json($data);
+    }
     public function register(Request $request){
         $json = json_decode($request->getContent());
         
@@ -212,7 +239,7 @@ class UserController extends Controller
                             $data = array(
                                 'status' => 'error',
                                 'code' => 400,
-                                'message' => 'Error de credenciales'
+                                'message' => 'Error, credenciales invalidas'
                             );
                         }
 
