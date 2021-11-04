@@ -211,5 +211,117 @@ class PlatoController extends Controller
             );
         }
         return response()->json($data);
-    } 
+    }
+
+    public function addFavorite(Request $request){
+        $jwtAuth = new JwtAuth();
+        if(isset($request->token)){
+            $user = $jwtAuth->checkToken($request->token, true);
+            if($user){
+                $plato = Plato::where('id', '=', $request->id)->first();
+                $plato->is_favorite = true;
+                if($plato->save()){
+                    $data = array(
+                        'status' => 'success',
+                        'code' => 200,
+                        'message' => 'Estado Actualizado satisfactoriamente'
+                    );
+                }else{
+                    $data = array(
+                        'status' => 'error',
+                        'code' => 405,
+                        'message' => 'no se actualizo el estado'
+                    );
+                }
+            }else{
+                $data = array(
+                    'status' => 'error',
+                    'code' => 402,
+                    'message' => 'Error de token'
+                );
+            }
+        }else{
+            $data = array(
+                'status' => 'error',
+                'code' => 400,
+                'message' => 'NO TOKEN'
+            );
+        }
+
+        return response()->json($data);
+    }
+
+    public function removeFavorite(Request $request){
+        $jwtAuth = new JwtAuth();
+        if(isset($request->token)){
+            $user = $jwtAuth->checkToken($request->token, true);
+            if($user){
+                $plato = Plato::where('id', '=', $request->id)->first();
+                $plato->is_favorite = false;
+                if($plato->save()){
+                    $data = array(
+                        'status' => 'success',
+                        'code' => 200,
+                        'message' => 'Estado Actualizado satisfactoriamente'
+                    );
+                }else{
+                    $data = array(
+                        'status' => 'error',
+                        'code' => 405,
+                        'message' => 'no se actualizo el estado'
+                    );
+                }
+            }else{
+                $data = array(
+                    'status' => 'error',
+                    'code' => 402,
+                    'message' => 'Error de token'
+                );
+            }
+        }else{
+            $data = array(
+                'status' => 'error',
+                'code' => 400,
+                'message' => 'NO TOKEN'
+            );
+        }
+        return response()->json($data);
+    }
+
+    public function getFavorites(Request $request){
+        $jwtAuth = new Jwtauth();
+        if(isset($request->token)){
+            $user = $jwtAuth->checkToken($request->token, true);
+            if($user){
+                $favorite = Plato::where('user_id', '=', $user->sub)->where('is_favorite', '=', true)->get();
+                if($favorite){
+                    $data = array(
+                        'status' => 'success',
+                        'code' => 200,
+                        'message' => 'Obtencion de platos favoritos correctamente',
+                        'favorite' => $favorite
+                    );
+                }else{
+                    $data = array(
+                        'status' => 'success',
+                        'code' => 200,
+                        'message' => 'ningun plato'
+                    );
+                }
+            }else{
+                $data = array(
+                    'status' => 'error',
+                    'code' => 401,
+                    'message' => 'Error de token'
+                );
+            }
+        }else{
+            $data = array(
+                'status' => 'error',
+                'code' => 400,
+                'message' => 'NO TOKEN'
+            );
+        }
+        return response()->json($data);
+    }
 }

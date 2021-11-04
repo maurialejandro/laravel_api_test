@@ -26,14 +26,9 @@ class CreatePlatosTable extends Migration
         //    $table->timestamps();
         //});
         // Agregar rating, ratingTotal, quantityVoting sin que se elimine la tabla y sus datos solo agregar los campos mencionados.
-        //Schema::table('platos', function (Blueprint $table){
-        //    $table->string('latitudeDelta')->nullable();
-        //    $table->string('longitudeDelta')->nullable();
-        //    $table->Integer('rating')->nullable();
-        //    $table->Integer('rating_total')->nullable();
-        //    $table->Integer('quantity_voting')->nullable();
-        //    $table->string('review')->nullable();
-        //});
+        Schema::table('platos', function (Blueprint $table){
+            $table->boolean('is_favorite')->default(0);
+        });
         
     }
 

@@ -34,4 +34,8 @@ Route::prefix('api')->group(function () {
     Route::post('get-plato', [PlatoController::class, 'getPlato']); 
     Route::post('get-total-platos', [PlatoController::class, 'getTotalPlatos']);
     Route::post('store-puntuation', [PlatoController::class, 'storePuntuation']);
+    Route::post('add-favorite', [PlatoController::class, 'addFavorite']);
+    Route::post('remove-favorite', [PlatoController::class, 'removeFavorite']);
+    Route::post('get-favorites', [PlatoController::class, 'getFavorites']);
+    
 });
