@@ -324,4 +324,46 @@ class PlatoController extends Controller
         }
         return response()->json($data);
     }
+
+    public function getBestRating(Request $request){
+        $jwtAuth = new JwtAuth();
+        if($request->token){
+            $user = $jwtAuth->checkToken($request->token, true);
+            if($user){
+                $best_rating = Plato::where('rating', '>', 3)->get();
+                if(isset($best_rating) && $best_rating ){
+                    $data = array(
+                        'status' => 'success',
+                        'code' => 2000,
+                        'message' => 'Datos obtenidos satisfactoriamente',
+                        'best_rating' => $best_rating
+                    );
+                } else {
+                    $data = array(
+                        'status' => 'error',
+                        'code' => 4003,
+                        'message' => 'No se obtuvo ningun dato'
+                    );
+                }
+            } else {
+                $data = array(
+                    'status' => 'error',
+                    'code' => 4001,
+                    'message' => 'Error de ingreso a la DB'
+                );
+            }
+        } else {
+            $data = array(
+                'status' => 'error',
+                'code' => 4000,
+                'message' => 'NO'
+            );
+        }
+        return response()->json($data);
+    }
+
+    public function search(Request $request){
+        // generar logica para buscar platos por nombre
+
+    }
 }
