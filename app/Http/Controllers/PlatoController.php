@@ -363,7 +363,36 @@ class PlatoController extends Controller
     }
 
     public function search(Request $request){
-        // generar logica para buscar platos por nombre
+        if(isset($request->token)){
+            $jwtAuth = new JwtAuth();
+            $user = $jwtAuth->checkToken($request->token, true);
+            if(isset($request->search) && $user){
+                $search = Plato::where('name', 'LIKE', "%$request->search%")->get();
+                if($search){
+                    $data = $search;
+                    
+                }else{
+                    $data = array(
+                        'status' => 'success',
+                        'code' => 401,
+                        'message' => 'No se obtuvo nada en la busqueda'
+                    );
+                }
+            }else{
+                $data = array(
+                    'status' => 'error',
+                    'code' => 401,
+                    'message' => 'No String, bad token'
+                );
+            }
+        }else{
+            $data = array(
+                'status' => 'error',
+                'code' => 400,
+                'message' =>'No TOKEN'
+            );
+        }
 
+        return response()->json($data);
     }
 }

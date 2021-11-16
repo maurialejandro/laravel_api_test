@@ -38,4 +38,5 @@ Route::prefix('api')->group(function () {
     Route::post('remove-favorite', [PlatoController::class, 'removeFavorite']);
     Route::post('get-favorites', [PlatoController::class, 'getFavorites']);
     Route::post('get-best-rating', [PlatoController::class, 'getBestRating']);
+    Route::post('search', [PlatoController::class, 'search']);
 });
