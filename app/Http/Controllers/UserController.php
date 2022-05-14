@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+
+    public function home(){
+        return view('/livewire/counter');
+    }
     public function checkUser(Request $request){
         $jwtAuth = new JwtAuth();
         if(isset($request->token)){

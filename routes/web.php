@@ -13,6 +13,10 @@ use App\Http\Controllers\PlatoController;
 | contains the "web" middleware group. Now create something great!
 |
 */
+/* Test livewire */
+
+Route::get('home', [UserController::class, 'home']);
+
 Route::prefix('api')->group(function () {
     // Routes profile
     Route::post('register' ,[UserController::class, 'register']);
